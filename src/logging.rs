@@ -4,6 +4,7 @@
 
 use std::path::PathBuf;
 use std::sync::Once;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tracing::Level;
 use tracing_subscriber::{
     fmt::{self, format::FmtSpan},
@@ -14,7 +15,7 @@ use crate::error::{LuaShieldError, Result};
 
 // 确保只初始化一次
 static INIT: Once = Once::new();
-static mut INITIALIZED: bool = false;
+static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 /// 设置日志系统
 ///
@@ -27,16 +28,7 @@ static mut INITIALIZED: bool = false;
 ///
 /// * `Result<()>` - 设置结果
 pub fn setup_logging(log_level: &str, log_file: Option<PathBuf>) -> Result<()> {
-    // 如果已经初始化，则直接返回
-    unsafe {
-        if INITIALIZED {
-            // 已经初始化过日志系统，记录一条提示信息
-            tracing::info!("日志系统已经初始化，忽略重复的初始化请求");
-            return Ok(());
-        }
-    }
-
-    // 解析日志级别
+    // 先解析日志级别，确保无论是否已初始化，无效的日志级别都会返回错误
     let level = match log_level.to_lowercase().as_str() {
         "error" => Level::ERROR,
         "warn" => Level::WARN,
@@ -45,6 +37,13 @@ pub fn setup_logging(log_level: &str, log_file: Option<PathBuf>) -> Result<()> {
         "trace" => Level::TRACE,
         _ => return Err(LuaShieldError::ConfigError(format!("无效的日志级别: {}", log_level))),
     };
+
+    // 如果已经初始化，则直接返回
+    if INITIALIZED.load(Ordering::Acquire) {
+        // 已经初始化过日志系统，记录一条提示信息
+        tracing::info!("日志系统已经初始化，忽略重复的初始化请求");
+        return Ok(());
+    }
 
     // 创建环境过滤器
     let filter = EnvFilter::from_default_env()
@@ -100,9 +99,7 @@ pub fn setup_logging(log_level: &str, log_file: Option<PathBuf>) -> Result<()> {
         }
 
         // 标记为已初始化
-        unsafe {
-            INITIALIZED = true;
-        }
+        INITIALIZED.store(true, Ordering::Release);
 
         // 记录启动日志
         tracing::info!("日志系统初始化完成，日志级别: {}", level);
