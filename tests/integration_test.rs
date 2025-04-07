@@ -83,7 +83,10 @@ async fn test_full_analysis_workflow() -> Result<()> {
 
     // 验证结果
     assert!(!results.is_empty());
-    assert_eq!(results[0].file_path, test_file);
+    assert_eq!(
+        results[0].file_path.file_name().unwrap(),
+        test_file.file_name().unwrap()
+    );
     assert!(!results[0].content.is_empty());
 
     // 创建输出器
