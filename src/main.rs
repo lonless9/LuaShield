@@ -21,7 +21,7 @@ use crate::cli::{Cli, Commands};
 use crate::config::Config;
 use crate::error::{LuaShieldError, Result};
 use crate::logging::setup_logging;
-use crate::output::{OutputFormat, Outputter};
+use crate::output::Outputter;
 
 /// 程序入口
 #[tokio::main]

@@ -1,17 +1,14 @@
 use std::env;
-use std::fs::{self, File};
+use std::fs::{File};
 use std::io::{Read, Write};
-use std::path::PathBuf;
 use tempfile::TempDir;
 use std::sync::Arc;
-use wiremock::{matchers::{body_json, header, method, path}, Mock, MockServer, ResponseTemplate};
+use wiremock::{matchers::{header, method, path}, Mock, MockServer, ResponseTemplate};
 
 use luashield::{
     analyzer::Analyzer,
-    config::{Config, LlmProvider},
+    config::Config,
     error::Result,
-    fs::FileSystem,
-    llm::LlmClient,
     output::{OutputFormat, Outputter},
 };
 

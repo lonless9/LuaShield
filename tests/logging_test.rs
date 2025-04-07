@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::Read;
-use std::path::PathBuf;
 use tempfile::TempDir;
 
 use luashield::{

@@ -1,16 +1,13 @@
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use mockall::predicate::*;
 use tokio_test::block_on;
 use mockall::predicate::str::contains;
 
 use luashield::{
-    analyzer::{Analyzer, AnalysisResult},
+    analyzer::AnalysisResult,
     config::{Config, LlmProvider},
     error::Result,
-    fs::FileSystem,
-    llm::LlmClient,
 };
 
 // 模拟 FileSystem
