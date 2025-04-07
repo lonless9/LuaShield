@@ -73,8 +73,13 @@ impl Default for Config {
 impl Config {
     /// 加载配置
     pub fn load() -> Result<Self> {
-        // 加载 .env 文件
-        dotenv().ok();
+        // 仅当环境变量标记不存在时才加载 .env 文件
+        if env::var("LUASHIELD_ENV_LOADED").is_err() {
+            // 加载 .env 文件
+            dotenv().ok();
+            // 设置已加载标记
+            env::set_var("LUASHIELD_ENV_LOADED", "true");
+        }
 
         // 创建默认配置
         let mut config = Config::default();

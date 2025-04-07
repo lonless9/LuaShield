@@ -88,9 +88,17 @@ LUASHIELD_OUTPUT_FORMAT=json
 
     // 直接从路径加载 .env 文件
     dotenvy::from_path(&env_file).ok();
+    // 设置已加载标记，防止 Config::load 再次加载 .env 文件
+    env::set_var("LUASHIELD_ENV_LOADED", "true");
 
+    // 打印环境变量，帮助调试
+    println!("环境变量 LUASHIELD_LLM_PROVIDER: {:?}", env::var("LUASHIELD_LLM_PROVIDER"));
+    
     // 加载配置
     let config = Config::load()?;
+    
+    // 打印实际加载的配置
+    println!("加载的配置 config.llm_provider: {:?}", config.llm_provider);
 
     // 验证配置
     assert_eq!(config.llm_provider, LlmProvider::OpenAI);
