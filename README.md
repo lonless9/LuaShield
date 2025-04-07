@@ -1,100 +1,157 @@
 # LuaShield
 
-基于大语言模型的Lua脚本安全分析工具
+一个用于分析 Lua 代码安全漏洞的工具。
 
-## 项目简介
+## 功能特点
 
-LuaShield是一个利用大语言模型(LLM)能力对Lua脚本进行智能化漏洞检测与安全分析的工具。该工具旨在帮助开发者识别Lua代码中的潜在安全风险，提供修复建议，并促进更安全的Lua编程实践。
+- 支持多种 LLM 提供商（Claude、OpenAI、Ollama）
+- 自动分析 Lua 代码中的安全漏洞
+- 提供详细的漏洞分析和修复建议
+- 支持多种输出格式（文本、JSON、Markdown）
+- 可配置的日志记录
+- 支持分析 README 文件以获取上下文信息
+- 自动识别网络相关文件
 
-## 主要功能
+## 安装
 
-- **智能化漏洞检测**：利用LLM深度理解代码语义，发现传统静态分析难以检测的复杂漏洞
-- **多场景适配**：支持游戏脚本、Web应用、嵌入式系统等各种Lua应用场景
-- **安全风险分类**：按OWASP标准对检测到的漏洞进行分类和风险评估
-- **修复建议生成**：为发现的问题提供上下文相关的修复建议和代码示例
-- **最佳实践指导**：基于行业标准提供Lua安全编码的最佳实践
+### 从源码安装
 
-## 工作原理
-
-LuaShield结合了传统静态分析技术与先进的LLM能力：
-
-1. **代码解析**：分析Lua代码的语法结构和依赖关系
-2. **语义理解**：利用LLM深度理解代码逻辑和意图
-3. **漏洞识别**：基于预定义的安全规则和模式识别潜在问题
-4. **风险评估**：评估每个问题的严重程度和潜在影响
-5. **报告生成**：生成详细的安全分析报告和修复建议
-
-## 安装与使用
-
-### 环境要求
-
-- Lua 5.1+（用于测试）
-
-### 安装
+1. 克隆仓库：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/lonless9/LuaShield.git
-cd LuaShield
-
-# 根据实际使用的编程语言，安装相应的依赖
+git clone https://github.com/yourusername/luashield.git
+cd luashield
 ```
+
+2. 编译安装：
+
+```bash
+cargo install --path .
+```
+
+### 从 crates.io 安装
+
+```bash
+cargo install luashield
+```
+
+## 使用方法
 
 ### 基本用法
 
 ```bash
 # 分析单个文件
-luashield analyze path/to/script.lua
+luashield analyze path/to/file.lua
 
 # 分析整个目录
-luashield analyze path/to/lua/project/
+luashield analyze path/to/directory
 
-# 生成详细报告
-luashield analyze path/to/script.lua --report-format html --output report.html
+# 使用特定 LLM 提供商
+luashield analyze --llm-provider claude path/to/file.lua
+
+# 指定输出格式
+luashield analyze --output-format json path/to/file.lua
+
+# 输出到文件
+luashield analyze --output-file report.md path/to/file.lua
 ```
 
-## 示例
+### 配置管理
 
-### 输入：存在SQL注入风险的Lua代码
+```bash
+# 列出当前配置
+luashield config --list
 
-```lua
--- vulnerable.lua
-function query_user(user_input)
-    local db = require("database")
-    local query = "SELECT * FROM users WHERE name = '" .. user_input .. "'"
-    return db.execute(query)
-end
+# 设置配置项
+luashield config --key llm_provider --value claude
+luashield config --key api_key --value your-api-key
+luashield config --key model_name --value claude-3-opus-20240229
 ```
 
-### 输出：分析结果
+### 查看版本
 
-```
-[高危] SQL注入漏洞 (行: 3)
-    描述: 直接拼接未经过滤的用户输入到SQL查询中
-    风险: 攻击者可能通过精心构造的输入执行任意SQL命令
-    建议修复: 使用参数化查询或对用户输入进行严格过滤
-    
-    修复示例:
-    local query = "SELECT * FROM users WHERE name = ?"
-    return db.execute(query, {user_input})
+```bash
+luashield version
 ```
 
-## 贡献指南
+## 配置项
 
-我们欢迎社区贡献！如果您想参与项目开发，请：
+| 配置项 | 说明 | 默认值 |
+|--------|------|--------|
+| llm_provider | LLM 提供商 | claude |
+| api_key | API 密钥 | - |
+| base_url | 基础 URL | - |
+| model_name | 模型名称 | claude-3-opus-20240229 |
+| root_path | 根路径 | . |
+| analyze_readme | 是否分析 README | true |
+| log_level | 日志级别 | info |
+| output_format | 输出格式 | text |
 
-1. Fork本仓库
-2. 创建您的功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交您的更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 开启一个Pull Request
+## 输出格式
+
+### 文本格式
+
+```
+文件: path/to/file.lua
+
+1. 漏洞概述
+...
+
+2. 漏洞详情
+...
+
+3. 修复建议
+...
+
+4. 最佳实践
+...
+```
+
+### JSON 格式
+
+```json
+[
+  {
+    "file_path": "path/to/file.lua",
+    "content": "..."
+  }
+]
+```
+
+### Markdown 格式
+
+```markdown
+# Lua 代码安全分析报告
+
+## path/to/file.lua
+
+1. 漏洞概述
+...
+
+2. 漏洞详情
+...
+
+3. 修复建议
+...
+
+4. 最佳实践
+...
+```
+
+## 环境变量
+
+| 环境变量 | 说明 |
+|----------|------|
+| LUASHIELD_API_KEY | API 密钥 |
+| LUASHIELD_BASE_URL | 基础 URL |
+| LUASHIELD_MODEL_NAME | 模型名称 |
+| LUASHIELD_LOG_LEVEL | 日志级别 |
+| LUASHIELD_OUTPUT_FORMAT | 输出格式 |
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
 
 ## 许可证
 
-本项目采用MIT许可证 - 详情请参见 [LICENSE](LICENSE) 文件
-
-## 联系方式
-
-- 项目维护者: Your Name
-- 邮箱: your.email@example.com
-- 项目链接: [https://github.com/lonless9/LuaShield](https://github.com/lonless9/LuaShield) 
+MIT 

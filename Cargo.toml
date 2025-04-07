@@ -1,0 +1,56 @@
+[package]
+name = "luashield"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "基于大语言模型的Lua脚本安全分析工具"
+repository = "https://github.com/lonless9/LuaShield"
+license = "MIT"
+readme = "README.md"
+keywords = ["lua", "security", "analysis", "llm", "vulnerability"]
+categories = ["security", "development-tools"]
+
+[dependencies]
+# 异步运行时
+tokio = { version = "1.36", features = ["full"] }
+
+# HTTP 客户端
+reqwest = { version = "0.11", features = ["json"] }
+
+# 序列化/反序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 错误处理
+thiserror = "1.0"
+anyhow = "1.0"
+
+# 日志记录
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# 参数解析
+clap = { version = "4.5", features = ["derive"] }
+
+# 配置管理
+dotenvy = "0.15"
+dirs = "5.0"
+
+# 正则表达式
+regex = "1.10"
+
+# 文件系统工具
+walkdir = "2.4"
+
+# Lua 解析器
+full_moon = "1.2.0"
+
+# 异步特性支持
+async-trait = "0.1"
+
+[dev-dependencies]
+# 测试工具
+tempfile = "3.10"
+wiremock = "0.5"
+mockall = "0.11"
+tokio-test = "0.4"
